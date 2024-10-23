@@ -19,4 +19,5 @@ The next major version will have a GUI for managing colours for each server regi
 # Thanks
 
 Credit to https://github.com/jamesb93 for his original creation of the AddOn.
+
 Thanks to https://github.com/Pretzellent for his contribution to the project.
