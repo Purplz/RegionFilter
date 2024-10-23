@@ -1,6 +1,7 @@
-## Interface: 90105
+## Interface: 110005
 ## Title: Region Filter
 ## Notes: Tags groups in the native LFG search if they are from your server and data-centre
+## SavedVariables: RF_Config
 ## Version: 1.5.0
 
 utils.lua

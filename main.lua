@@ -51,34 +51,33 @@ if RF.region == 'BR' then RF.postType = posts.br_post end
 
 ---- Updating the text of entries
 function RF.updateEntries(results)
-	local searchResults = C_LFGList.GetSearchResultInfo(results.resultID)
-	local activityID = searchResults.activityID
-	local leaderName = searchResults.leaderName
-	local activityName = C_LFGList.GetActivityInfo(activityID)
+    local searchResults = C_LFGList.GetSearchResultInfo(results.resultID)
+    local activityID = searchResults.activityID
+    local leaderName = searchResults.leaderName
+    local activityInfo = C_LFGList.GetActivityInfoTable(activityID)
 
-	if leaderName ~= nil then -- Filter out nil entries from LFG Pane
-		local name, realm = RF:sanitiseName(leaderName)
-		local info = servers[realm]
-		if info then
-			local region, dataCentre, regionColour = info[1], info[2], info[3]
-			if region == "NA" then
-				regionLabel = region..'-'..dataCentre;
-			else
-				regionLabel = region
-			end
-				results.ActivityName:SetText(
-					RF:regionTag(
-						regionLabel, 
-						activityName,
-						regionColour
-					)
-				)
-				results.ActivityName:SetTextColor(
-					RF:dungeonText(RF.region, region)
-				)
-		end
-	end
+    if activityInfo then
+        local activityName = activityInfo.fullName
+        if leaderName then -- Filter out nil entries from LFG Pane
+            local name, realm = RF:sanitiseName(leaderName)
+            local info = servers[realm]
+            if info then
+                local region, dataCentre, regionColour = info[1], info[2], info[3]
+                local regionLabel = (region == "NA") and (region .. '-' .. dataCentre) or region
+
+                results.ActivityName:SetText(
+                    RF:regionTag(regionLabel, activityName, regionColour)
+                )
+                results.ActivityName:SetTextColor(
+                    RF:dungeonText(RF.region, region)
+                )
+            end
+        end
+    else
+        print("Warning: Activity info not found for ID:", activityID)
+    end
 end
+
 
 
 -- SLASH_RFILTER1 = "/rfilter"
