@@ -97,7 +97,7 @@ local welcomePrompt = CreateFrame("Frame")
 welcomePrompt:RegisterEvent("PLAYER_LOGIN")
 welcomePrompt:SetScript("OnEvent", function(_, event)
 	if event == "PLAYER_LOGIN" then
-		print("|cff00ffff[Region Filter]|r |cffffcc00Version "..RF.version.."|r. If there any bugs please report them at https://github.com/jamesb93/RegionFilter")
+		print("|cff00ffff[Region Filter]|r |cffffcc00Version "..RF.version.."|r. If there any bugs please report them at https://github.com/Purplz/RegionFilter")
 		print(RF.postType)
 	end
 end)
