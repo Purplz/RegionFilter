@@ -50,7 +50,7 @@ function RF.updateEntries(results)
     if activityInfo then
         local activityName = activityInfo.fullName
         if leaderName then -- Filter out nil entries from LFG Pane
-            local name, realm = RF:splitName(leaderName) -- Use splitName instead of sanitiseName
+            local name, realm = RF:splitName(leaderName) -- Use splitName function to get realm name
             local info = servers[realm]
             if info then
                 local region, dataCentre, regionColour = info[1], info[2], info[3]

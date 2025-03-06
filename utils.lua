@@ -17,8 +17,3 @@ function RF:splitName(leaderName)
     realm = realm and realm:gsub("'", "") or RF.myRealm
     return name, realm
 end
-
-function RF:sanitiseName(fullName)
-    if not fullName then return nil, nil end
-    return fullName:match("([^%-]+)%-(.+)")
-end
