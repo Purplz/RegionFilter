@@ -1,7 +1,7 @@
 local RF = select(2, ...)
 local servers = RF.servers
 local posts = RF.posts
-RF.version = "1.6.0"
+RF.version = "1.6.1"
 RF.togRemove = false
 
 local spaced_realm = string.gsub(GetRealmName(), "%s+", "")
@@ -23,43 +23,34 @@ end
 if RF.region == 'OC' then RF.postType = posts.oc_post end
 if RF.region == 'LA' then RF.postType = posts.la_post end
 if RF.region == 'BR' then RF.postType = posts.br_post end
----- Removing Enrties when togRemove is enabled
--- function RF.removeEntries(results)
--- 	if RF.togRemove then
--- 		for i=1, #results do
--- 			local resultID = results[i]
--- 			local searchResults = C_LFGList.GetSearchResultInfo(resultID)
-
--- 			local leaderName = searchResults.leaderName
-
--- 			if leaderName ~= nil then -- Filter out nil entries from LFG Pane
--- 				local name, realm = RF:sanitiseName(leaderName)
--- 				local info = servers[realm]
--- 				if info ~= nil then
--- 					local region = info[1]
--- 					if RF.region ~= region then
--- 						table.remove(results, i)
--- 					end
--- 				end
--- 			end
--- 		end
--- 	end
--- 	table.sort(results)
--- 	LFGListFrame.SearchPanel.totalResults = #results
--- 	return true
--- end
 
 ---- Updating the text of entries
 function RF.updateEntries(results)
     local searchResults = C_LFGList.GetSearchResultInfo(results.resultID)
+
+    if not searchResults then
+        print("Warning: searchResults is nil for resultID:", results.resultID)
+        return
+    end
+
+    -- Try to get activityID safely
     local activityID = searchResults.activityID
+    if not activityID and searchResults.activityIDs then
+        activityID = searchResults.activityIDs[1] -- Get the first activity ID if it's a table
+    end
+
+    if not activityID then
+        print("Warning: activityID is nil for resultID:", results.resultID)
+        return
+    end
+
     local leaderName = searchResults.leaderName
     local activityInfo = C_LFGList.GetActivityInfoTable(activityID)
 
     if activityInfo then
         local activityName = activityInfo.fullName
         if leaderName then -- Filter out nil entries from LFG Pane
-            local name, realm = RF:sanitiseName(leaderName)
+            local name, realm = RF:splitName(leaderName) -- Use splitName instead of sanitiseName
             local info = servers[realm]
             if info then
                 local region, dataCentre, regionColour = info[1], info[2], info[3]
@@ -71,26 +62,14 @@ function RF.updateEntries(results)
                 results.ActivityName:SetTextColor(
                     RF:dungeonText(RF.region, region)
                 )
+            else
+                print("Warning: Realm not found in servers table -", realm)
             end
         end
     else
         print("Warning: Activity info not found for ID:", activityID)
     end
 end
-
-
-
--- SLASH_RFILTER1 = "/rfilter"
--- SlashCmdList["RFILTER"] = function(msg)
--- 	if RF.togRemove then
--- 		print('|cff00ffff[Region Filter]: |cffFF6EB4 Not filtering outside regions')
--- 	else
--- 		print('|cff00ffff[Region Filter]: |cffFF6EB4 Filtering outside regions')
--- 	end
--- 	RF.togRemove = not RF.togRemove
--- 	LFGListSearchPanel_UpdateResultList (LFGListFrame.SearchPanel)
--- 	LFGListSearchPanel_UpdateResults 	(LFGListFrame.SearchPanel)
--- end
 
 ---- Print When Loaded ----
 local welcomePrompt = CreateFrame("Frame")
@@ -102,5 +81,4 @@ welcomePrompt:SetScript("OnEvent", function(_, event)
 	end
 end)
 
--- hooksecurefunc("LFGListUtil_SortSearchResults", RF.sortEntries)
 hooksecurefunc("LFGListSearchEntry_Update", RF.updateEntries)
